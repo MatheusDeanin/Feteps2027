@@ -10,48 +10,44 @@ document.getElementById("Tabela").onclick = () => {
 };
 
 // 🔥 FORM
-document.getElementById("form").addEventListener("submit", async (event) => {
-    event.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
 
-    let salario = parseFloat(document.getElementById("salario").value);
-    let despesas = parseFloat(document.getElementById("despesas").value);
-    let mes = parseInt(document.getElementById("mes").value);
+    const form = document.getElementById("form");
 
-    if (!salario || !despesas || !mes) {
-        alert("Preencha tudo!");
+    if (!form) {
+        console.error("❌ Form não encontrado! Confere o ID no HTML.");
         return;
     }
 
-    let limite = salario * 0.80;
-    let sobra = salario - despesas;
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-    let investimento = sobra > 0 ? sobra * 0.75 : 0;
-    let uso = sobra > 0 ? sobra * 0.25 : 0;
+        let salario = parseFloat(document.getElementById("salario").value);
+        let despesas = parseFloat(document.getElementById("despesas").value);
+        let mes = parseInt(document.getElementById("mes").value);
 
-    let mensagem = despesas > limite
-        ? "⚠️ Acima de 80%!"
-        : "✅ Dentro do limite!";
+        if (isNaN(salario) || isNaN(despesas) || isNaN(mes)) {
+            alert("Preencha tudo!");
+            return;
+        }
 
-    try {
-        await addDoc(collection(db, "financas"), {
-            salario,
-            despesas,
-            mes,
-            investimento,
-            uso,
-            criadoEm: new Date()
-        });
+        let sobra = salario - despesas;
+        let investimento = sobra > 0 ? sobra * 0.75 : 0;
+        let uso = sobra > 0 ? sobra * 0.25 : 0;
 
-        document.getElementById("resultado").innerHTML = `
-            ✅ Salvo!<br><br>
-            Sobra: R$ ${sobra.toFixed(2)}<br>
-            Investimento: R$ ${investimento.toFixed(2)}<br>
-            Uso: R$ ${uso.toFixed(2)}<br><br>
-            ${mensagem}
-        `;
+        try {
+            await addDoc(collection(db, "financas"), {
+                salario,
+                despesas,
+                mes,
+                investimento,
+                uso
+            });
 
-    } catch (erro) {
-        console.error(erro);
-        alert("Erro no Firebase!");
-    }
+            document.getElementById("resultado").innerHTML = "✅ Salvo com sucesso!";
+        } catch (erro) {
+            console.error("Erro Firebase:", erro);
+        }
+    });
+
 });

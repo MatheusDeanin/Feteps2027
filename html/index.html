@@ -1,3 +1,8 @@
+script.js:13 Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')
+    at script.js:13:32
+
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,7 +17,7 @@
         <button id="Tabela">Tabela Anual</button>
     </nav>
 
-    <form onsubmit="calcular(event)">
+    <form id="form">
         Salário Líquido : <br>
         <input type="number" id="salario" required><br><br>
 
