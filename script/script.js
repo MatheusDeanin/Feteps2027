@@ -1,15 +1,33 @@
-import { db, collection, addDoc } from "./firebase.js";
+import { db } from "./firebase.js";
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-async function testeFirebase() {
-    try {
-        const docRef = await addDoc(collection(db, "teste"), {
-            nome: "Lucas",
-            valor: 123
-        });
-        console.log("🔥 Salvou! ID:", docRef.id);
-    } catch (e) {
-        console.error("❌ Erro real:", e);
-    }
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-testeFirebase();
+    const form = document.getElementById("form");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const salario = document.getElementById("salario").value;
+        const despesas = document.getElementById("despesas").value;
+        const mes = document.getElementById("mes").value;
+
+        try {
+            await addDoc(collection(db, "financas"), {
+                salario,
+                despesas,
+                mes,
+                criadoEm: new Date()
+            });
+
+            status.innerText = "✅ Salvo no Firebase!";
+            form.reset();
+
+        } catch (erro) {
+            console.error(erro);
+            status.innerText = "❌ Erro ao salvar!";
+        }
+    });
+
+});
