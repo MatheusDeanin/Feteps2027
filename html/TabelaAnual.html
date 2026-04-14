@@ -32,102 +32,207 @@
                 </tr>
                 <tr>
                     <td>Fevereiro</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-2"></td>
+                    <td id="despesas-2"></td>
+                    <td id="investimento-1"></td>
+                    <td id="diversao-2"></td>
                 </tr>
                 <tr>
                     <td>Março</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-3"></td>
+                    <td id="despesas-3"></td>
+                    <td id="investimento-3"></td>
+                    <td id="diversao-3"></td>
                 </tr>
                 <tr>
                     <td>Abril</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-4"></td>
+                    <td id="despesas-4"></td>
+                    <td id="investimento-4"></td>
+                    <td id="diversao-4"></td>
                 </tr>
                 <tr>
                     <td>Maio</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-5"></td>
+                    <td id="despesas-5"></td>
+                    <td id="investimento-5"></td>
+                    <td id="diversao-5"></td>
                 </tr>
                 <tr>
                     <td>Junho</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-6"></td>
+                    <td id="despesas-6"></td>
+                    <td id="investimento-6"></td>
+                    <td id="diversao-6"></td>
                 </tr>
                 <tr>
                     <td>Julho</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-7"></td>
+                    <td id="despesas-7"></td>
+                    <td id="investimento-7"></td>
+                    <td id="diversao-7"></td>
                 </tr>
                 <tr>
                     <td>Agosto</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-8"></td>
+                    <td id="despesas-8"></td>
+                    <td id="investimento-8"></td>
+                    <td id="diversao-8"></td>
                 </tr>
                 <tr>
                     <td>Setembro</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-9"></td>
+                    <td id="despesas-9"></td>
+                    <td id="investimento-9"></td>
+                    <td id="diversao-9"></td>
                 </tr>
                 <tr>
                     <td>Outubro</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-10"></td>
+                    <td id="despesas-10"></td>
+                    <td id="investimento-10"></td>
+                    <td id="diversao-10"></td>
                 </tr>
                 <tr>
                     <td>Novembro</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-11"></td>
+                    <td id="despesas-11"></td>
+                    <td id="investimento-11"></td>
+                    <td id="diversao-11"></td>
                 </tr>
                 <tr>
                     <td>Dezembro</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td id="salario-12"></td>
+                    <td id="despesas-12"></td>
+                    <td id="investimento-12"></td>
+                    <td id="diversao-12"></td>
                 </tr>
                 
             </tbody>
         </table>
     </main>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "SUA_KEY",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJETO",
-  };
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyAyMghZo93kMIouIJkq-4PG8ZU4FrhQdGk",
+  authDomain: "feteps2027.firebaseapp.com",
+  projectId: "feteps2027",
+  storageBucket: "feteps2027.firebasestorage.app",
+  messagingSenderId: "283844171197",
+  appId: "1:283844171197:web:c2ab45f3ba15c26c20aed4",
+};
 
-  window.db = db;
-  window.getDocs = getDocs;
-  window.collection = collection;
+console.log("DEBUG: Iniciando Firebase...");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Joga para o Window para acesso global
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+console.log("DEBUG: Firebase exportado para 'window'.");
+
+// 1. Navegação
+const botoes = [
+    { id: "Inicial", link: "index.html" },
+    { id: "Tabela", link: "TabelaAnual.html" }
+];
+
+botoes.forEach(botao => {
+    const el = document.getElementById(botao.id);
+    if (el) {
+        el.addEventListener("click", () => {
+            console.log(`DEBUG: Navegando para ${botao.link}`);
+            window.location.href = `./${botao.link}`;
+        });
+    }
+});
+
+// 2. Função de Cálculo com Debug
+async function calcular(event) {
+    event.preventDefault();
+    console.log("DEBUG: Botão calcular clicado.");
+
+    let salario = parseFloat(document.getElementById("salario").value);
+    let despesas = parseFloat(document.getElementById("despesas").value);
+    let mes = parseInt(document.getElementById("mes").value);
+
+    console.log(`DEBUG: Dados capturados -> Salário: ${salario}, Despesas: ${despesas}, Mês: ${mes}`);
+
+    if (isNaN(salario) || isNaN(despesas) || isNaN(mes)) {
+        console.error("DEBUG: Falha na validação de campos vazios.");
+        alert("Preencha todos os campos corretamente!");
+        return;
+    }
+
+    let sobra = salario - despesas;
+    let investimentos = sobra > 0 ? sobra * 0.75 : 0;
+    let uso = sobra > 0 ? sobra * 0.25 : 0;
+
+    // VERIFICA FIREBASE ANTES DE ENVIAR
+    if (!window.db) {
+        console.error("DEBUG: Objeto 'window.db' está indefinido.");
+        alert("Erro: Banco de dados não carregou!");
+        return;
+    }
+
+    try {
+        console.log("DEBUG: Tentando enviar para o Firestore...");
+        const docRef = await window.addDoc(window.collection(window.db, "financas"), {
+            salario,
+            despesas,
+            mes,
+            investimento: investimentos,
+            diversao: uso,
+            timestamp: new Date()
+        });
+        console.log("DEBUG: Sucesso! Documento salvo com ID:", docRef.id);
+
+        document.getElementById("resultado").innerHTML = `✅ Dados salvos para o mês ${mes}!`;
+
+    } catch (e) {
+        console.error("DEBUG: Erro fatal no Firebase:", e);
+        alert("Erro ao salvar! Veja o console (F12).");
+    }
+}
+
+// 3. Carregar dados para a tabela
+async function carregarDados() {
+    console.log("DEBUG: Verificando se existe tabela na página...");
+    if (!document.getElementById("salario-1")) {
+        console.log("DEBUG: Tabela não encontrada nesta página. Abortando carregamento.");
+        return;
+    }
+
+    try {
+        console.log("DEBUG: Buscando documentos no Firestore...");
+        const querySnapshot = await window.getDocs(window.collection(window.db, "financas"));
+        console.log(`DEBUG: ${querySnapshot.size} documentos encontrados.`);
+
+        querySnapshot.forEach((doc) => {
+            let dados = doc.data();
+            console.log(`DEBUG: Processando mês ${dados.mes}`, dados);
+            
+            // Aqui chamaria a função preencherTabela(dados.salario, ...)
+            const s = document.getElementById(`salario-${dados.mes}`);
+            if (s) s.innerText = `R$ ${dados.salario.toFixed(2)}`;
+        });
+
+    } catch (e) {
+        console.error("DEBUG: Erro ao carregar dados da tabela:", e);
+    }
+}
+
+// Inicialização
+window.onload = () => {
+    console.log("DEBUG: Página carregada totalmente.");
+    carregarDados();
+};
+window.calcular = calcular;
 </script>
-    <script src="../script/script.js"></script>
 </body>
 </html>

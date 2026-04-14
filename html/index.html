@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
-    <title>Administração Financeira</title>
+    <title>Administração Financeira - Debug Mode</title>
 </head>
 <body>
     <nav>
@@ -12,51 +12,155 @@
         <button id="Tabela">Tabela Anual</button>
     </nav>
 
-<form onsubmit="calcular(event)">
-    Salário Líquido : <br>
-    <input type="number" id="salario" required><br><br>
+    <form onsubmit="calcular(event)">
+        Salário Líquido : <br>
+        <input type="number" id="salario" required><br><br>
 
-    Despesas : <br>
-    <input type="number" id="despesas" required><br><br>
+        Despesas : <br>
+        <input type="number" id="despesas" required><br><br>
+        
         <select id="mes" required>
-        <option value="">Selecione o mês</option>
-        <option value="1">Janeiro</option>
-        <option value="2">Fevereiro</option>
-        <option value="3">Março</option>
-        <option value="4">Abril</option>
-        <option value="5">Maio</option>
-        <option value="6">Junho</option>
-        <option value="7">Julho</option>
-        <option value="8">Agosto</option>
-        <option value="9">Setembro</option>
-        <option value="10">Outubro</option>
-        <option value="11">Novembro</option>
-        <option value="12">Dezembro</option>
-    </select>
+            <option value="">Selecione o mês</option>
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+        </select>
 
-    <button type="submit">Calcular</button>
-</form>
+        <button type="submit">Calcular e Salvar</button>
+    </form>
     <div id="resultado"></div>
 
-
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAyMghZo93kMIouIJkq-4PG8ZU4FrhQdGk",
-    authDomain: "feteps2027.firebaseapp.com",
-    projectId: "feteps2027",
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyAyMghZo93kMIouIJkq-4PG8ZU4FrhQdGk",
+  authDomain: "feteps2027.firebaseapp.com",
+  projectId: "feteps2027",
+  storageBucket: "feteps2027.firebasestorage.app",
+  messagingSenderId: "283844171197",
+  appId: "1:283844171197:web:c2ab45f3ba15c26c20aed4",
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+console.log("DEBUG: Iniciando Firebase...");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  // 🔥 deixa global pra usar no seu script.js
-  window.db = db;
-  window.addDoc = addDoc;
-  window.collection = collection;
+// Joga para o Window para acesso global
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+console.log("DEBUG: Firebase exportado para 'window'.");
+
+// 1. Navegação
+const botoes = [
+    { id: "Inicial", link: "index.html" },
+    { id: "Tabela", link: "TabelaAnual.html" }
+];
+
+botoes.forEach(botao => {
+    const el = document.getElementById(botao.id);
+    if (el) {
+        el.addEventListener("click", () => {
+            console.log(`DEBUG: Navegando para ${botao.link}`);
+            window.location.href = `./${botao.link}`;
+        });
+    }
+});
+
+// 2. Função de Cálculo com Debug
+async function calcular(event) {
+    event.preventDefault();
+    console.log("DEBUG: Botão calcular clicado.");
+
+    let salario = parseFloat(document.getElementById("salario").value);
+    let despesas = parseFloat(document.getElementById("despesas").value);
+    let mes = parseInt(document.getElementById("mes").value);
+
+    console.log(`DEBUG: Dados capturados -> Salário: ${salario}, Despesas: ${despesas}, Mês: ${mes}`);
+
+    if (isNaN(salario) || isNaN(despesas) || isNaN(mes)) {
+        console.error("DEBUG: Falha na validação de campos vazios.");
+        alert("Preencha todos os campos corretamente!");
+        return;
+    }
+
+    let sobra = salario - despesas;
+    let investimentos = sobra > 0 ? sobra * 0.75 : 0;
+    let uso = sobra > 0 ? sobra * 0.25 : 0;
+
+    // VERIFICA FIREBASE ANTES DE ENVIAR
+    if (!window.db) {
+        console.error("DEBUG: Objeto 'window.db' está indefinido.");
+        alert("Erro: Banco de dados não carregou!");
+        return;
+    }
+
+    try {
+        console.log("DEBUG: Tentando enviar para o Firestore...");
+        const docRef = await window.addDoc(window.collection(window.db, "financas"), {
+            salario,
+            despesas,
+            mes,
+            investimento: investimentos,
+            diversao: uso,
+            timestamp: new Date()
+        });
+        console.log("DEBUG: Sucesso! Documento salvo com ID:", docRef.id);
+
+        document.getElementById("resultado").innerHTML = `✅ Dados salvos para o mês ${mes}!`;
+
+    } catch (e) {
+        console.error("DEBUG: Erro fatal no Firebase:", e);
+        alert("Erro ao salvar! Veja o console (F12).");
+    }
+}
+
+// 3. Carregar dados para a tabela
+async function carregarDados() {
+    console.log("DEBUG: Verificando se existe tabela na página...");
+    if (!document.getElementById("salario-1")) {
+        console.log("DEBUG: Tabela não encontrada nesta página. Abortando carregamento.");
+        return;
+    }
+
+    try {
+        console.log("DEBUG: Buscando documentos no Firestore...");
+        const querySnapshot = await window.getDocs(window.collection(window.db, "financas"));
+        console.log(`DEBUG: ${querySnapshot.size} documentos encontrados.`);
+
+        querySnapshot.forEach((doc) => {
+            let dados = doc.data();
+            console.log(`DEBUG: Processando mês ${dados.mes}`, dados);
+            
+            // Aqui chamaria a função preencherTabela(dados.salario, ...)
+            const s = document.getElementById(`salario-${dados.mes}`);
+            if (s) s.innerText = `R$ ${dados.salario.toFixed(2)}`;
+        });
+
+    } catch (e) {
+        console.error("DEBUG: Erro ao carregar dados da tabela:", e);
+    }
+}
+
+// Inicialização
+window.onload = () => {
+    console.log("DEBUG: Página carregada totalmente.");
+    carregarDados();
+};
+window.calcular = calcular;
 </script>
-<script src="../script/script.js"></script>
+
 </body>
 </html>
