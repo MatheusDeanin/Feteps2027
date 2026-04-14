@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Site com Firebase</title>
+</head>
+<body>
+
+    <h1>Conectado ao Firebase!</h1>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      
+      // Cole aqui os dados que você pegou no console do Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyAyMghZo93kMIouIJkq-4PG8ZU4FrhQdGk",
+        authDomain: "feteps2027.firebaseapp.com",
+        projectId: "feteps2027",
+        storageBucket: "feteps2027.firebasestorage.app",
+        messagingSenderId: "283844171197",
+        appId: "1:283844171197:web:c2ab45f3ba15c26c20aed4",
+      };
+
+      // Inicializa o Firebase
+      const app = initializeApp(firebaseConfig);
+      
+      console.log("Firebase conectado com sucesso!");
+    </script>
+</body>
+</html>
