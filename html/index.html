@@ -41,8 +41,9 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// 🔥 CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyAyMghZo93kMIouIJkq-4PG8ZU4FrhQdGk",
   authDomain: "feteps2027.firebaseapp.com",
@@ -52,114 +53,65 @@ const firebaseConfig = {
   appId: "1:283844171197:web:c2ab45f3ba15c26c20aed4",
 };
 
-console.log("DEBUG: Iniciando Firebase...");
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Joga para o Window para acesso global
+// 🔥 DISPONÍVEL GLOBAL
 window.db = db;
 window.collection = collection;
 window.addDoc = addDoc;
-window.getDocs = getDocs;
-console.log("DEBUG: Firebase exportado para 'window'.");
 
-// 1. Navegação
-const botoes = [
-    { id: "Inicial", link: "index.html" },
-    { id: "Tabela", link: "TabelaAnual.html" }
-];
-
-botoes.forEach(botao => {
-    const el = document.getElementById(botao.id);
-    if (el) {
-        el.addEventListener("click", () => {
-            console.log(`DEBUG: Navegando para ${botao.link}`);
-            window.location.href = `./${botao.link}`;
-        });
-    }
-});
-
-// 2. Função de Cálculo com Debug
-async function calcular(event) {
+// 🔥 FUNÇÃO PRINCIPAL
+window.calcular = async function(event) {
     event.preventDefault();
-    console.log("DEBUG: Botão calcular clicado.");
+    console.log("Botão clicado ✅");
 
     let salario = parseFloat(document.getElementById("salario").value);
     let despesas = parseFloat(document.getElementById("despesas").value);
     let mes = parseInt(document.getElementById("mes").value);
 
-    console.log(`DEBUG: Dados capturados -> Salário: ${salario}, Despesas: ${despesas}, Mês: ${mes}`);
-
     if (isNaN(salario) || isNaN(despesas) || isNaN(mes)) {
-        console.error("DEBUG: Falha na validação de campos vazios.");
-        alert("Preencha todos os campos corretamente!");
+        alert("Preencha tudo corretamente!");
         return;
     }
 
+    let limite = salario * 0.80;
     let sobra = salario - despesas;
-    let investimentos = sobra > 0 ? sobra * 0.75 : 0;
+
+    let investimento = sobra > 0 ? sobra * 0.75 : 0;
     let uso = sobra > 0 ? sobra * 0.25 : 0;
 
-    // VERIFICA FIREBASE ANTES DE ENVIAR
-    if (!window.db) {
-        console.error("DEBUG: Objeto 'window.db' está indefinido.");
-        alert("Erro: Banco de dados não carregou!");
-        return;
-    }
+    let mensagem = despesas > limite
+        ? "⚠️ Acima de 80% de despesas!"
+        : "✅ Dentro do limite!";
 
     try {
-        console.log("DEBUG: Tentando enviar para o Firestore...");
-        const docRef = await window.addDoc(window.collection(window.db, "financas"), {
+        await addDoc(collection(db, "financas"), {
             salario,
             despesas,
             mes,
-            investimento: investimentos,
-            diversao: uso,
-            timestamp: new Date()
-        });
-        console.log("DEBUG: Sucesso! Documento salvo com ID:", docRef.id);
-
-        document.getElementById("resultado").innerHTML = `✅ Dados salvos para o mês ${mes}!`;
-
-    } catch (e) {
-        console.error("DEBUG: Erro fatal no Firebase:", e);
-        alert("Erro ao salvar! Veja o console (F12).");
-    }
-}
-
-// 3. Carregar dados para a tabela
-async function carregarDados() {
-    console.log("DEBUG: Verificando se existe tabela na página...");
-    if (!document.getElementById("salario-1")) {
-        console.log("DEBUG: Tabela não encontrada nesta página. Abortando carregamento.");
-        return;
-    }
-
-    try {
-        console.log("DEBUG: Buscando documentos no Firestore...");
-        const querySnapshot = await window.getDocs(window.collection(window.db, "financas"));
-        console.log(`DEBUG: ${querySnapshot.size} documentos encontrados.`);
-
-        querySnapshot.forEach((doc) => {
-            let dados = doc.data();
-            console.log(`DEBUG: Processando mês ${dados.mes}`, dados);
-            
-            // Aqui chamaria a função preencherTabela(dados.salario, ...)
-            const s = document.getElementById(`salario-${dados.mes}`);
-            if (s) s.innerText = `R$ ${dados.salario.toFixed(2)}`;
+            investimento,
+            uso,
+            data: new Date()
         });
 
-    } catch (e) {
-        console.error("DEBUG: Erro ao carregar dados da tabela:", e);
-    }
-}
+        document.getElementById("resultado").innerHTML = `
+            <b>✅ Salvo com sucesso!</b><br><br>
+            Salário: R$ ${salario.toFixed(2)}<br>
+            Despesas: R$ ${despesas.toFixed(2)}<br>
+            Sobra: R$ ${sobra.toFixed(2)}<br><br>
+            ${mensagem}<br><br>
+            Investimento: R$ ${investimento.toFixed(2)}<br>
+            Uso livre: R$ ${uso.toFixed(2)}
+        `;
 
-// Inicialização
-window.onload = () => {
-    console.log("DEBUG: Página carregada totalmente.");
-    carregarDados();
+        console.log("Salvo no Firebase 🚀");
+
+    } catch (erro) {
+        console.error("Erro Firebase:", erro);
+        alert("Erro ao salvar no Firebase!");
+    }
 };
-window.calcular = calcular;
 </script>
 
 </body>
